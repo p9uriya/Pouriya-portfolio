@@ -699,7 +699,7 @@ scheduleScrollUpdate();
   const doc = document.documentElement;
   let language = "en";
 try {
-  if (localStorage.getItem("pouriya-site-language") === "fa") language = "fa";
+  if (localStorage.getItem("pouriya-site-language-v2") === "fa") language = "fa";
 } catch {}
 
   const langButton = document.createElement("button");
@@ -901,7 +901,7 @@ try {
 
   langButton.addEventListener("click", () => {
     language = language === "fa" ? "en" : "fa";
-    try { localStorage.setItem("pouriya-site-language", language); } catch {}
+    try { localStorage.setItem("pouriya-site-language-v2", language); } catch {}
     renderLanguage();
   });
 
