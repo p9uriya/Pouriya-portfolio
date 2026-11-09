@@ -697,10 +697,10 @@ scheduleScrollUpdate();
   if (!$("#hero-title") || $("#ps-lang")) return;
 
   const doc = document.documentElement;
-  let language = "fa";
-  try {
-    if (localStorage.getItem("pouriya-site-language") === "en") language = "en";
-  } catch {}
+  let language = "en";
+try {
+  if (localStorage.getItem("pouriya-site-language") === "fa") language = "fa";
+} catch {}
 
   const langButton = document.createElement("button");
   langButton.type = "button";
