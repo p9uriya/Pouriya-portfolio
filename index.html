@@ -495,5 +495,150 @@ filters.addEventListener("click", (event) => {
 });
 scheduleScrollUpdate();
 </script>
+<!-- Pouriya portfolio upgrade | Paste immediately before </body> -->
+<style>
+  @font-face {
+    font-family: "Portfolio Mitra";
+    src: local("B Mitra"), local("BMitra");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  html[lang="fa"] body {
+    font-family: "Portfolio Mitra", Vazirmatn, Tahoma, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+  }
+
+  html[lang="en"] body {
+    font-family: system-ui, sans-serif;
+    font-weight: 400;
+  }
+
+  .hero h1 { font-weight: 600; letter-spacing: normal; }
+  .section h2, .role { font-weight: 500; }
+  .controls .ps-lang { font-size: .76rem; padding-inline: 8px; }
+  .core.has-portrait { width: 36%; }
+  .visual { max-width: 455px; }
+  .hero { isolation: isolate; overflow: clip; }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 28% 40%, #58f5d02b, transparent 50%),
+                radial-gradient(ellipse at 75% 75%, #ad89ff24, transparent 54%);
+    animation: ps-ambient 8s ease-in-out infinite alternate;
+  }
+
+  .ps-orbit {
+    position: absolute;
+    width: 69%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px dashed rgba(var(--rgb), .32);
+    pointer-events: none;
+    animation: ps-orbit 18s linear infinite;
+  }
+
+  .ps-orbit::before, .ps-orbit::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 16px var(--accent);
+  }
+
+  .ps-orbit::before { inset-inline-start: -4px; }
+  .ps-orbit::after { inset-inline-end: -4px; }
+  @keyframes ps-orbit { to { transform: rotate(360deg); } }
+  @keyframes ps-ambient { to { opacity: .45; transform: scale(1.12); } }
+
+  .repo, #services .card, .panel {
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  @media (hover: hover) {
+    .repo:hover, #services .card:hover, .panel:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 36px rgba(var(--rgb), .12);
+    }
+  }
+
+  .ps-bio-extra { margin-top: 14px; }
+  .ps-open { position: fixed; inset-inline-end: 16px; bottom: 16px; z-index: 10; }
+  .ps-dialog {
+    width: min(540px, calc(100% - 24px));
+    max-height: 88dvh;
+    color: var(--text);
+    background: #111426;
+    border: 1px solid var(--second);
+    border-radius: 18px;
+    padding: clamp(14px, 4vw, 22px);
+    overflow: auto;
+  }
+
+  .ps-dialog::backdrop { background: #070912c9; }
+  .ps-dialog h2 { font-size: 1.3rem; }
+  .ps-dialog p { overflow-wrap: anywhere; }
+  .ps-head, .ps-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ps-head { justify-content: space-between; margin-bottom: 8px; }
+  .ps-actions { margin: 10px 0; }
+  .ps-dialog form, .ps-dialog label { display: grid; gap: 6px; }
+  .ps-dialog form { margin: 10px 0; }
+  .ps-dialog input, .ps-dialog textarea {
+    width: 100%;
+    padding: 9px 10px;
+    background: #090b16;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font: inherit;
+  }
+
+  .ps-reply {
+    min-height: 64px;
+    padding: 10px;
+    background: #090b16;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    white-space: pre-wrap;
+  }
+
+  .ps-lead { margin-top: 14px; }
+  footer { padding-bottom: 82px; }
+
+  @media (max-width: 620px) {
+    .visual { max-width: 300px; }
+    .core.has-portrait { width: 33%; }
+    .ps-open { bottom: 10px; inset-inline-end: 10px; }
+    .nav { gap: 5px; }
+    .nav .controls { gap: 4px; }
+    .nav .controls .icon { min-width: 36px; }
+    html[lang="en"] .brand { white-space: normal; }
+  }
+</style>
+
+<dialog class="ps-dialog" id="ps-dialog" aria-labelledby="ps-dialog-title">
+  <div class="ps-head">
+    <h2 id="ps-dialog-title">دستیار پوریا</h2>
+    <button class="icon" id="ps-close" type="button" aria-label="بستن">×</button>
+  </div>
+  <p id="ps-mode"></p>
+
+  <div class="ps-actions">
+    <button class="btn ps-topic" data-topic="about" type="button">درباره پوریا</button>
+    <button cl
 </body>
 </html>
