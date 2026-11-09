@@ -640,5 +640,391 @@ scheduleScrollUpdate();
   <div class="ps-actions">
     <button class="btn ps-topic" data-topic="about" type="button">درباره پوریا</button>
     <button cl
+
+ass="btn ps-topic" data-topic="projects" type="button">نمونه‌کارها</button>
+    <button class="btn ps-topic" data-topic="hire" type="button">شروع همکاری</button>
+  </div>
+
+  <form id="ps-chat">
+    <label>
+      <span id="ps-question-label">سؤال شما</span>
+      <input id="ps-question" maxlength="500" required>
+    </label>
+    <button class="btn primary" id="ps-ask" type="submit">پرسیدن</button>
+  </form>
+  <p class="ps-reply" id="ps-reply" role="status"></p>
+
+  <details class="ps-lead">
+    <summary id="ps-lead-title">درخواست همکاری</summary>
+    <form id="ps-lead-form">
+      <p id="ps-lead-note"></p>
+      <label>
+        <span id="ps-name-label">نام</span>
+        <input name="name" autocomplete="name" maxlength="80" required>
+      </label>
+      <label>
+        <span id="ps-email-label">ایمیل</span>
+        <input name="email" type="email" autocomplete="email" maxlength="160" required>
+      </label>
+      <label>
+        <span id="ps-brief-label">شرح پروژه</span>
+        <textarea name="brief" rows="3" maxlength="1200" required></textarea>
+      </label>
+      <button class="btn primary" id="ps-lead-button" type="submit">آماده‌کردن درخواست</button>
+      <p id="ps-lead-status" role="status"></p>
+      <textarea id="ps-draft" rows="5" readonly hidden aria-label="متن آمادهٔ درخواست"></textarea>
+      <a class="btn" id="ps-linkedin" href="https://www.linkedin.com/in/pouriyashahabi/"
+         target="_blank" rel="noopener noreferrer" hidden>باز کردن لینکدین</a>
+    </form>
+  </details>
+</dialog>
+
+<button class="btn primary ps-open" id="ps-open" type="button" aria-haspopup="dialog">
+  ✦ دستیار پوریا
+</button>
+
+<script>
+(() => {
+  "use strict";
+
+  // Leave blank for the built-in FAQ and LinkedIn draft.
+  // To connect a real agent and CRM, set this to your own HTTPS backend.
+  // POST JSON {type:"chat", question, language} -> {reply:"..."}
+  // POST JSON {type:"lead", name, email, brief, language} -> {ok:true}
+  // Return ok:true only after saving the lead. Keep credentials on the backend.
+  const endpoint = "";
+
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+  if (!$("#hero-title") || $("#ps-lang")) return;
+
+  const doc = document.documentElement;
+  let language = "fa";
+  try {
+    if (localStorage.getItem("pouriya-site-language") === "en") language = "en";
+  } catch {}
+
+  const langButton = document.createElement("button");
+  langButton.type = "button";
+  langButton.className = "icon ps-lang";
+  langButton.id = "ps-lang";
+  $(".nav .controls").prepend(langButton);
+
+  const orbit = document.createElement("span");
+  orbit.className = "ps-orbit";
+  orbit.setAttribute("aria-hidden", "true");
+  $(".visual").append(orbit);
+
+  const extra = document.createElement("p");
+  extra.id = "ps-bio-extra";
+  extra.className = "ps-bio-extra";
+  $("#profile-bio").after(extra);
+
+  const translations = [];
+  function translate(node, english, persian) {
+    if (node) translations.push({ node, english, persian: persian ?? node.textContent.trim() });
+  }
+
+  function group(selector, values) {
+    $$(selector).forEach((node, index) => {
+      if (values[index] !== undefined) translate(node, values[index]);
+    });
+  }
+
+  translate($(".skip"), "Skip to content");
+  translate($(".brand"), "PS · Pouriya Shahabi Rad");
+  group("#navigation a", ["About", "Services", "Projects", "Notes", "FAQ", "Contact"]);
+  translate($("#hero-title"), "Pouriya Shahabi Rad");
+  translate($("#profile-title"), "Web Design, Automation & Applied Data");
+  translate($("#profile-intro"),
+    "I build responsive websites, automate repetitive workflows, and use data mining and machine learning to explore patterns and evaluate predictions.",
+    "وب‌سایت واکنش‌گرا طراحی می‌کنم، فرایندهای تکراری رو با اتوماسیون ساده می‌کنم و از داده‌کاوی و یادگیری ماشین برای پیدا کردن الگوها و ارزیابی پیش‌بینی‌ها استفاده می‌کنم."
+  );
+  group("#home .chips .chip", ["Web Design", "Automation", "Data Mining", "Machine Learning"]);
+  group("#home .actions a", ["Explore projects ↗️", "LinkedIn ↗️", "GitHub"]);
+  tr
+
+anslate($("#about h2"), "About me");
+  group("#about .two h3", ["How I work", "Tools and methods"]);
+  translate($("#profile-bio"),
+    "I’m Pouriya Shahabi Rad. My work spans web design, workflow automation, data mining, and machine learning. I like projects where a clear interface makes a task easier, automation handles the routine steps, and data helps the team decide what to improve.",
+    "من پوریا شهابی‌رادم. در طراحی وب، اتوماسیون، داده‌کاوی و یادگیری ماشین کار می‌کنم. به پروژه‌هایی علاقه دارم که رابط سایت انجام یک کار را ساده کند، اتوماسیون مراحل تکراری را انجام دهد و داده نشان دهد کجای کار جای بهبود دارد."
+  );
+  translate(extra,
+    "My public projects cover engineering support, meeting intelligence, and business monitoring. SolidFlow AI is a Telegram assistant for engineering tasks. AI Meeting Intelligence turns meeting notes into follow-up actions and reports.",
+    "پروژه‌های عمومی من از دستیار مهندسی تا تحلیل جلسات و پایش کسب‌وکار رو پوشش می‌دن. SolidFlow AI برای پیگیری کارهای مهندسی در تلگرامه و AI Meeting Intelligence از متن جلسات، کارهای قابل‌پیگیری و گزارش آماده می‌کنه."
+  );
+  group("#about .two .panel:nth-child(2) p", ["Interface design, workflow orchestration, data exploration, and model evaluation."]);
+  translate($("#services h2"), "Services");
+  translate($("#services .section-head p"),
+    "A website form can start a follow-up workflow. Its submissions can later help identify patterns in customer requests."
+  );
+  group("#services article h3", ["Web Design", "Workflow Automation", "Data Mining", "Machine Learning"]);
+  group("#services article p", [
+    "Responsive personal websites, business websites, and landing pages.",
+    "Workflows for capturing requests, moving data between tools, and automating follow-up.",
+    "Clean and explore datasets, identify patterns, and present findings through reports and charts.",
+    "Build and evaluate prediction or classification models for the problem and available data."
+  ]);
+
+  translate($("#work h2"), "GitHub projects");
+  translate($("#work .section-head p"), "All 11 public repositories from p9uriya, with links to the source code.");
+  const categories = {
+    all: "All", web: "Web", operations: "Business Automation",
+    intelligence: "Intelligence & Monitoring", engineering: "Engineering Tools", education: "Education"
+  };
+  $$("#work .filter").forEach((button) => translate(button, categories[button.dataset.filter]));
+  $$("#work .repo").forEach((card) => {
+    translate(card.querySelector(".repo-top .chip"), categories[card.dataset.category]);
+  });
+  group(".repo h3 bdi", [
+    "SolidFlow AI", "AI Meeting Intelligence", "Casting", "SAP AI Supply Chain Control Tower",
+    "SpyGlass AI", "SentinelAI", "Crypto Sentinel X", "LeadMind AI",
+    "Dastyar Amooshesyar", "AI Educational Assistant", "Auto README Generator"
+  ]);
+  group(".repo p", [
+    "A Telegram engineering assistant for drawing analysis, approvals, and task tracking.",
+    "Turns meeting transcripts into action items, Persian PDF reports, and team notifications.",
+    "A TypeScript web project focused on a foundry.",
+    "AI-assisted workflows for SAP supply chain operations and monitoring.",
+    "Tracks competitors and market changes, identifies opportunities and risks, and emails reports.",
+    "Cyber threat intelligence with CISA KEV data, exposure prioritization, and bilingual reports.",
+    "Crypto market monitoring, wallet behavior analysis, and risk signals.",
+    "A multi-agent workflow for lead generation and sales automation.",
+    "An educational assistant with sales workflow automation.",
+    "Automates student support and educational information workflows.",
+    "A Python tool that scans a project directory and generates a README."
+  ]);
+  group(".repo-tech bdi", [
+    "n8n · OpenAI", "n8n · Persian reports", "TypeScript", "SAP · n8n",
+    "Competitor analysis", "n8n · Ollama · CISA KEV", "n8n · Risk analysis",
+    "n8n · Sales", "n8n · Education", "n8n · Support", "Python"
+  ]);
+  $$(".repo-link").forEach((link) => translate(link, "View on GitHub ↗️"));
+  translate($("#work .
+
+actions a"), "All repositories on GitHub ↗️");
+
+  translate($("#notes h2"), "Technical notes");
+  translate($("#notes .section-head p"), "Three lessons from web design, automation, and modeling.");
+  group("#notes summary", ["Start web design on mobile", "Plan for workflow failures", "Evaluate models on unseen data"]);
+  group("#notes details p", [
+    "Check the headline, content order, and main action on a narrow screen before widening the layout.",
+    "Define what starts the workflow, where the output goes, and how failures are recorded and handled.",
+    "Choose a metric for the problem and compare performance against a baseline on data held out from training."
+  ]);
+  translate($("#faq h2"), "Frequently asked questions");
+  group("#faq summary", [
+    "What should I send to start a project?",
+    "Can we start with a small workflow?",
+    "Where can I find the source code?"
+  ]);
+  group("#faq details p", [
+    "Describe the goal, your current tools, and the expected outcome. A sample of the data structure helps for data projects.",
+    "Yes. We can start with a single step, like tracking website form submissions, and expand after reviewing the result.",
+    "Every project card links to its public GitHub repository."
+  ]);
+  translate($("#contact h2"), "Let’s talk about your project");
+  translate($("#contact .panel p"), "Message me on LinkedIn to discuss a website, a workflow, or a data project.");
+  translate($("footer p"), "Pouriya Shahabi Rad · Personal Portfolio");
+  translate($("footer a"), "Back to top ↑");
+
+  const agentLabels = {
+    "ps-open": ["✦ دستیار پوریا", "✦ Portfolio Assistant"],
+    "ps-dialog-title": ["دستیار پوریا", "Portfolio Assistant"],
+    "ps-question-label": ["سؤال شما", "Your question"],
+    "ps-ask": ["پرسیدن", "Ask"],
+    "ps-lead-title": ["درخواست همکاری", "Project inquiry"],
+    "ps-name-label": ["نام", "Name"],
+    "ps-email-label": ["ایمیل", "Email"],
+    "ps-brief-label": ["شرح پروژه", "Project brief"],
+    "ps-linkedin": ["باز کردن لینکدین", "Open LinkedIn"]
+  };
+  for (const [id, [fa, en]] of Object.entries(agentLabels)) {
+    translate(document.getElementById(id), en, fa);
+  }
+  group(".ps-topic", ["About Pouriya", "Projects", "Work together"]);
+
+  const words = (fa, en) => language === "fa" ? fa : en;
+  const number = (value) => new Intl.NumberFormat(language === "fa" ? "fa-IR" : "en").format(value);
+
+  function updateCount() {
+    const count = $$(".repo:not([hidden])").length;
+    $("#repo-count").textContent = number(count) + words(" پروژه", " projects");
+  }
+
+  const answers = {
+    about: [
+      "پوریا در طراحی وب، اتوماسیون، داده‌کاوی و یادگیری ماشین کار می‌کند. نمونه‌هایش شامل ابزار مهندسی، تحلیل جلسات و پایش بازار است.",
+      "Pouriya works across web design, automation, data mining, and machine learning. His portfolio includes engineering, meeting intelligence, and monitoring tools."
+    ],
+    projects: [
+      "در بخش پروژه‌ها، ۱۱ مخزن عمومی گیت‌هاب هست. برای شروع، SolidFlow AI، AI Meeting Intelligence یا Casting رو ببین.",
+      "There are 11 public repositories in the Projects section. Start with SolidFlow AI, AI Meeting Intelligence, or Casting."
+    ],
+    hire: [
+      "هدف، ابزارهای فعلی و خروجی مورد انتظار رو مشخص کن. می‌تونی فرم «درخواست همکاری» رو باز کنی.",
+      "Describe your goal, current tools, and expected outcome. You can use the Project inquiry form below."
+    ],
+    fallback: [
+      "می‌تونم دربارهٔ پوریا، نمونه‌کارها یا مسیر شروع همکاری توضیح بدم. یکی از گزینه‌های بالا رو انتخاب کن.",
+      "I can help with questions about Pouriya, his projects, and how to start working together. Try one of the options above."
+    ]
+  };
+
+  function showAnswer(key) {
+    $("#ps-reply").textContent = words(...answers[key]);
+  }
+
+  function renderLanguage() {
+    doc.lang = language;
+    doc.dir = words("rtl", "ltr");
+    document.title = words(
+      "پوریا شهابی‌راد | طراحی وب، اتوماسیون و داده",
+      "Pouriya Shahabi Rad | Web Design, Automation & Data"
+    );
+    for (const entry of translations) {
+      entry.node.textContent = words(entry.persian, entry.en
+
+glish);
+    }
+    langButton.textContent = words("EN", "فا");
+    langButton.setAttribute("aria-label", words("Switch to English", "تغییر زبان به فارسی"));
+    $("#navigation").setAttribute("aria-label", words("منوی اصلی", "Main navigation"));
+    $("#menu").setAttribute("aria-label", words("منوی اصلی", "Main menu"));
+    $("#ps-close").setAttribute("aria-label", words("بستن", "Close"));
+    $("#portrait").alt = words("پوریا شهابی‌راد", "Pouriya Shahabi Rad");
+    $("#ps-mode").textContent = endpoint
+      ? words("دستیار آنلاین نمونه‌کارها", "Online portfolio assistant")
+      : words("راهنمای نمونه‌کارها و سؤالات رایج", "Portfolio and FAQ guide");
+    $("#ps-lead-note").textContent = endpoint
+      ? words("با ثبت فرم، اطلاعات برای پیگیری پروژه ارسال می‌شه.", "Submitting sends your details for project follow-up.")
+      : words("فرم متن درخواست رو برای ارسال در لینکدین آماده می‌کنه.", "This form prepares a message you can send on LinkedIn.");
+    $("#ps-lead-button").textContent = endpoint
+      ? words("ارسال درخواست", "Send inquiry")
+      : words("آماده‌کردن درخواست", "Prepare inquiry");
+    showAnswer("fallback");
+    updateCount();
+  }
+
+  langButton.addEventListener("click", () => {
+    language = language === "fa" ? "en" : "fa";
+    try { localStorage.setItem("pouriya-site-language", language); } catch {}
+    renderLanguage();
+  });
+
+  $(".filters").addEventListener("click", (event) => {
+    if (event.target.closest(".filter")) updateCount();
+  });
+
+  const dialog = $("#ps-dialog");
+  $("#ps-open").addEventListener("click", () => dialog.showModal());
+  $("#ps-close").addEventListener("click", () => dialog.close());
+
+  $$(".ps-topic").forEach((button) => button.addEventListener("click", () => {
+    showAnswer(button.dataset.topic);
+    if (button.dataset.topic === "hire") $(".ps-lead").open = true;
+  }));
+
+  async function request(data) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, language }),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error("Request failed");
+      return await response.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  $("#ps-chat").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const question = $("#ps-question").value.trim();
+    if (!question) return;
+
+    if (!endpoint) {
+      const text = question.toLowerCase();
+      let topic = "fallback";
+      if (/پروژه|نمونه.?کار|گیت|project|github/.test(text)) topic = "projects";
+      else if (/همکاری|هزینه|تماس|hire|price|contact|work with/.test(text)) topic = "hire";
+      else if (/پوریا|مهارت|داده|اتوماسیون|طراحی|pouriya|skills|data|automation|design/.test(text)) topic = "about";
+      showAnswer(topic);
+      return;
+    }
+
+    const button = $("#ps-ask");
+    button.disabled = true;
+    $("#ps-reply").textContent = words("در حال دریافت پاسخ…", "Getting a reply…");
+    try {
+      const result = await request({ type: "chat", question });
+      if (typeof result.reply !== "string" || !result.reply.trim()) throw new Error("Empty reply");
+      $("#ps-reply").textContent = result.reply;
+    } catch {
+      $("#ps-reply").textContent = words(
+        "ارتباط برقرار نشد. می‌تونی از گزینه‌های بالای پنجره استفاده کنی.",
+        "The assistant could not connect. You can still use the options above."
+      );
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  $("#ps-lead-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const fields = new FormData(form);
+    const name = String(fields.get("name") ?? "").trim();
+    const email = String(fields.get("email") ?? "").trim();
+    const brief = String(fields.get("brief") ?? "").trim();
+    const status = $("#ps-lead-status");
+    if (!name || !email || !brief) {
+      status.textContent = words("لطفاً هر سه فیل
+
+د رو پر کن.", "Please complete all three fields.");
+      return;
+    }
+
+    if (!endpoint) {
+      const draft = $("#ps-draft");
+      draft.value = words(
+        "سلام پوریا،\nنام: " + name + "\nایمیل: " + email + "\n\nشرح پروژه:\n" + brief,
+        "Hi Pouriya,\nName: " + name + "\nEmail: " + email + "\n\nProject brief:\n" + brief
+      );
+      draft.hidden = false;
+      $("#ps-linkedin").hidden = false;
+      status.textContent = words("متن آماده‌ست. کپی کن و در لینکدین بفرست.", "Copy this draft and send it on LinkedIn.");
+      draft.focus();
+      draft.select();
+      return;
+    }
+
+    const button = $("#ps-lead-button");
+    button.disabled = true;
+    status.textContent = words("در حال ارسال…", "Sending…");
+    try {
+      const result = await request({ type: "lead", name, email, brief });
+      if (result.ok !== true) throw new Error("Lead was not confirmed");
+      form.reset();
+      status.textContent = words("درخواست ثبت شد.", "Your inquiry was recorded.");
+    } catch {
+      status.textContent = words(
+        "ثبت درخواست تأیید نشد. برای پیگیری از لینکدین استفاده کن.",
+        "The inquiry could not be confirmed. Please follow up on LinkedIn."
+      );
+      $("#ps-linkedin").hidden = false;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  renderLanguage();
+})();
+</script>
 </body>
 </html>
