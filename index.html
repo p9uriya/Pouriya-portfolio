@@ -1014,5 +1014,28 @@ scheduleScrollUpdate();
   renderLanguage();
 })();
 </script>
+<script>
+(() => {
+  const brand = document.querySelector("header .brand");
+  const title = document.querySelector("#hero-title");
+  if (!brand || !title) return;
+
+  const icon = document.createElement("span");
+  icon.className = "logo";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "\u26A1";
+
+  function updateBrand() {
+    brand.hidden = false;
+    brand.replaceChildren(icon, " " + title.textContent.trim());
+  }
+
+  updateBrand();
+  new MutationObserver(updateBrand).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["lang"]
+  });
+})();
+</script>
 </body>
 </html>
