@@ -698,9 +698,7 @@ scheduleScrollUpdate();
 
   const doc = document.documentElement;
   let language = "en";
-try {
-  if (localStorage.getItem("pouriya-site-language-v2") === "fa") language = "fa";
-} catch {}
+
 
   const langButton = document.createElement("button");
   langButton.type = "button";
