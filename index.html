@@ -905,8 +905,6 @@ showAnswer("fallback");
 updateCount();
 doc.classList.remove("lang-loading");
 }
-  }
-
   langButton.addEventListener("click", () => {
     language = language === "fa" ? "en" : "fa";
     try { localStorage.setItem("pouriya-site-language-v2", language); } catch {}
