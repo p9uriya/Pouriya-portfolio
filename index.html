@@ -1037,5 +1037,127 @@ scheduleScrollUpdate();
   });
 })();
 </script>
+.visual .float {
+    animation-duration: 6s;
+  }
+
+  .hero::after {
+    left: -15%;
+  }
+}
+
+/* Respect existing motion switch */
+:root[data-motion="off"] .hero::after,
+:root[data-motion="off"] .visual::before,
+:root[data-motion="off"] .visual::after,
+:root[data-motion="off"] .visual .float {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="on"]) .hero::after,
+  :root:not([data-motion="on"]) .visual::before,
+  :root:not([data-motion="on"]) .visual::after,
+  :root:not([data-motion="on"]) .visual .float {
+    animation: none !important;
+  }
+}
+</style>
+
+<script id="creative-motion-engine">
+(() => {
+  "use strict";
+
+  const root = document.documentElement;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const isMotionEnabled = () =>
+    root.dataset.motion !== "off" &&
+    (!reducedMotion.matches || root.dataset.motion === "on");
+
+  // Interactive spotlight on cards
+  function setupSpotlight() {
+    if (!finePointer.matches) return;
+
+    document.querySelectorAll(".repo, #services .card").forEach(card => {
+      card.addEventListener("pointermove", event => {
+        if (!isMotionEnabled()) return;
+
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        card.style.setProperty("--spot-x", `${x}px`);
+        card.style.setProperty("--spot-y", `${y}px`);
+      }, { passive: true });
+    });
+  }
+
+  // Gentle 3D movement on hero visual
+  function setupHeroMotion() {
+    const visual = document.querySelector(".hero .visual");
+    if (!visual || !finePointer.matches) return;
+
+    visual.addEventListener("pointermove", event => {
+      if (!isMotionEnabled()) return;
+
+      const rect = visual.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - .5;
+      const y = (event.clientY - rect.top) / rect.height - .5;
+
+      visual.style.setProperty("--hero-mx", `${x * 8}px`);
+      visual.style.setProperty("--hero-my", `${y * 8}px`);
+    }, { passive: true });
+
+    visual.addEventListener("pointerleave", () => {
+      visual.style.setProperty("--hero-mx", "0px");
+      visual.style.setProperty("--hero-my", "0px");
+    });
+  }
+
+  // Subtle parallax on visual elements
+  const style = document.createElement("style");
+  style.textContent = `
+    @media (hover:hover) and (pointer:fine) {
+      .hero .visual {
+        translate: var(--hero-mx, 0px) var(--hero-my, 0px);
+        transition: translate .25s ease-out;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Stagger existing reveal sections
+  function setupReveal() {
+    document.querySelectorAll(".section-head.reveal, .two .reveal, .grid3 .reveal")
+      .forEach((element, index) => {
+        element.style.transitionDelay = `${Math.min(index % 4, 3) * 65}ms`;
+      });
+  }
+
+  // Keep effects synchronized with the existing motion control
+  function syncMotion() {
+    if (!isMotionEnabled()) {
+      document.querySelectorAll(".hero .visual").forEach(element => {
+        element.style.setProperty("--hero-mx", "0px");
+        element.style.setProperty("--hero-my", "0px");
+      });
+    }
+  }
+
+  setupSpotlight();
+  setupHeroMotion();
+  setupReveal();
+  syncMotion();
+
+  new MutationObserver(syncMotion).observe(root, {
+    attributes: true,
+    attributeFilter: ["data-motion"]
+  });
+
+  reducedMotion.addEventListener("change", syncMotion);
+})();
+</script>
 </body>
 </html>
