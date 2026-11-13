@@ -1,12 +1,20 @@
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090b16">
 <meta name="description" content="پوریا شهابی‌راد | طراحی سایت، اتوماسیون فرایندها، داده‌کاوی و یادگیری ماشین.">
 <title>پوریا شهابی‌راد | طراحی سایت، اتوماسیون و تحلیل داده</title>
-<script>document.documentElement.classList.add('js')</script>
+<script>
+document.documentElement.classList.add('js', 'lang-loading');
+</script>
+
+<style>
+html.lang-loading body {
+  visibility: hidden;
+}
+</style>
 <!-- Vazirmatn 33.0.3
 Copyright 2015 The Vazirmatn Project Authors (https://github.com/rastikerdar/vazirmatn)
 
@@ -893,8 +901,10 @@ scheduleScrollUpdate();
     $("#ps-lead-button").textContent = endpoint
       ? words("ارسال درخواست", "Send inquiry")
       : words("آماده‌کردن درخواست", "Prepare inquiry");
-    showAnswer("fallback");
-    updateCount();
+showAnswer("fallback");
+updateCount();
+doc.classList.remove("lang-loading");
+}
   }
 
   langButton.addEventListener("click", () => {
